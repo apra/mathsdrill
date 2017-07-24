@@ -22,3 +22,43 @@
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
 }
+
+.operation {
+  font-family: 'Arial', sans-serif;
+  width: 150px;
+  display: inline-block;
+  position: relative;
+  margin: 30px
+}
+.topPart {
+  float: left;
+  width: 100%;
+}
+.bottomPart {
+  float: left;
+  width: 100%;
+  border-top: 1px solid #333;
+}
+
+.operandi {
+  float: left;
+  position: relative;
+  width: 135px;
+}
+.operandi span {
+  margin: 15px 10px;
+  display: block;
+  text-align: right
+}
+.operatore {
+  float: left;
+  position: relative;
+  width: 15px;
+  height: 15px;
+  top: 15px;
+}
+.result {
+  margin: 15px 10px;
+  width: 115px;
+  text-align: right
+}
