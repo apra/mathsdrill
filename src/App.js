@@ -12,7 +12,7 @@ class Exercise {
     return Math.floor(Math.random() * (max + 1 - min)) + min; //The maximum is exclusive and the minimum is inclusive
   }
 }
-class Pythagoras extends Exercise{
+class Pythagoras extends Exercise {
   constructor(noptions) {
     super()
     let options = noptions || {}
@@ -20,7 +20,7 @@ class Pythagoras extends Exercise{
     let i = 0
     for (let a = 2; a < 13; a++) {
       for (let b = a; b < 13; b++) {
-        this.numbers[i++] = [a, b, a*b]
+        this.numbers[i++] = [a, b, a * b]
       }
     }
     this.cacheSize = 20;
@@ -38,9 +38,9 @@ class Pythagoras extends Exercise{
       this.numbers.push(this.cache.pop())
     }
 
-    let index = super.getRandomInt(0, this.numbers.length-1)
+    let index = super.getRandomInt(0, this.numbers.length - 1)
     let numbers = this.numbers[index]
-    
+
     if (this.useCache) {
       this.cache.push(numbers)
     }
@@ -51,7 +51,7 @@ class Pythagoras extends Exercise{
 
   newExercise() {
     let exercise = []
-    for (let a = 0; a < this.exerciseLength; a++){
+    for (let a = 0; a < this.exerciseLength; a++) {
       exercise[a] = this.newOperation();
     }
     return exercise;
@@ -71,6 +71,32 @@ class Operation {
   }
   coinFlip() {
     return (Math.floor(Math.random() * 2) === 0);
+  }
+  toNumber(arr) {
+    return parseInt(arr.slice(0).reverse().join(''), 10);
+  }
+  toArray(number) {
+    let string = '' + number
+    return string.split('').slice(0).reverse()
+  }
+  //https://jsfiddle.net/JamesOR/RC7SY/
+  getAllFactorsFor(remainder) {
+    var factors = [], i;
+
+    for (i = 2; i <= remainder; i++) {
+      while ((remainder % i) === 0) {
+        factors.push(i);
+        let temp = []
+        for (let a = 0; a < factors.length - 1; a++){
+          temp[a] = factors[factors.length - 1]*factors[a];
+        }
+        console.log(temp)
+        factors = factors.concat(temp)
+        remainder /= i;
+      }
+    }
+
+    return factors;
   }
 
 }
@@ -143,14 +169,10 @@ class Addition extends Operation {
   }
   toArray() {
     let numbers = this.generateOperation()
-    let firstNumber = parseInt(numbers[0].reverse().join(''), 10);
-    let secondNumber = parseInt(numbers[1].reverse().join(''), 10)
+    let firstNumber = super.toNumber(numbers[0]);
+    let secondNumber = super.toNumber(numbers[1]);
     let result = firstNumber + secondNumber;
     return [firstNumber, secondNumber, result]
-  }
-  toString() {
-    let operation = this.generateOperation();
-    return parseInt(operation[0].join(''), 10) + " + " + parseInt(operation[1].join(''), 10);
   }
 }
 class Subtraction extends Operation {
@@ -224,7 +246,7 @@ class Subtraction extends Operation {
       console.log(j)
       secondNumber[j] = super.getRandomInt(1, 9)
     }
-    let result = (parseInt(firstNumber.slice(0).reverse().join(''), 10) - parseInt(secondNumber.slice(0).reverse().join(''), 10))
+    let result = (super.toNumber(firstNumber) - super.toNumber(secondNumber));
     if (result < 0) {
       firstNumber.push(super.getRandomInt(1, 9))
     }
@@ -292,8 +314,8 @@ class Subtraction extends Operation {
       numbers = this.generateOperation()
     }
 
-    let firstNumber = parseInt(numbers[0].slice(0).reverse().join(''), 10);
-    let secondNumber = parseInt(numbers[1].slice(0).reverse().join(''), 10)
+    let firstNumber = super.toNumber(numbers[0]);
+    let secondNumber = super.toNumber(numbers[1]);
     let result = firstNumber - secondNumber;
 
     return [firstNumber, secondNumber, result]
@@ -301,93 +323,104 @@ class Subtraction extends Operation {
 }
 class Multiplication extends Operation {
   //Difficulty goes from 0 to 1.
-  constructor(difficulty, mode) {
+  constructor(difficulty) {
     super();
     this.difficulty = Math.min(Math.max(difficulty, 0.2), 1);
-    this.mode = mode;
-    this.maxLen = 10
-    this.maxRiporti = 5
-    this.maxDifficulty = this.maxLen + this.maxRiporti
+    this.length1 = (this.difficulty >= 0.5) ? 2 : 1;
+    this.length0 = Math.round((this.difficulty * 6) - 2)
   }
   get operatore() {
-    return "+";
-  }
-  generatePythagoras() {
-    let firstNumber = super.getRandomInt(1, 9)
-    let secondNumber = super.getRandomInt(1,9)
+    return "X";
   }
   generateOperation() {
-    console.log("New operation")
-    //D is the effective difficulty (it's not descriptive but doesn't waste space)
-    let D = Math.round(this.difficulty * this.maxDifficulty);
-    //The number of carries in the operation 
-    let carry = super.getRandomInt(1, this.maxRiporti * this.difficulty);
-    //The number of digits in the number
-    let nDigit = Math.max(D - carry, 3)
 
-    //If there arent enough digits
-    if (nDigit + carry < D) {
-      nDigit = D - carry
-    }
-
-    //Number of digits in first number
-    let nDigit0 = Math.floor(nDigit / 2)
-    //Digits in secon number
-    let nDigit1 = nDigit - nDigit0;
-
-    let remain = Math.min(nDigit0, nDigit1)
     let firstNumber = []
     let secondNumber = []
-    let Digit = super.getRandomDigit();
-    let newDigit = -1;
-    let carryLeft = carry;
-    console.log(carry)
-    while (remain > 0) {
-      //If Digit is 0 then I can't have a carry
-      if (Digit === 0 && carryLeft >= 0) {
-        Digit = super.getRandomInt(1, 9)
-      }
-      if (super.coinFlip() === true && (remain - carryLeft) > 0) {
-        newDigit = super.getRandomInt(0, 10 - Digit - 1)
-      } else {
-        newDigit = super.getRandomInt(10 - Digit, 9)
-        carryLeft--
-      }
-      firstNumber.push(Digit)
-      secondNumber.push(newDigit)
-      Digit = super.getRandomDigit();
-      remain--;
-    }
 
-    let l = firstNumber.length
-    for (let j = l; j < nDigit0; j++) {
-      firstNumber[j] = super.getRandomInt(1, 9)
+    firstNumber[0] = super.getRandomDigit()
+    secondNumber[0] = super.getRandomDigit()
+
+    for (let a = 1; a < this.length0; a++) {
+      firstNumber[a] = super.getRandomInt(1, 9)
     }
-    l = secondNumber.length
-    for (let j = l; j < nDigit1; j++) {
-      secondNumber[j] = super.getRandomInt(1, 9)
+    for (let a = 1; a < this.length1; a++) {
+      secondNumber[a] = super.getRandomInt(1, 9)
     }
 
     return [firstNumber, secondNumber]
   }
   toArray() {
     let numbers = this.generateOperation()
-    let firstNumber = parseInt(numbers[0].reverse().join(''), 10);
-    let secondNumber = parseInt(numbers[1].reverse().join(''), 10)
-    let result = firstNumber + secondNumber;
+    let firstNumber = super.toNumber(numbers[0]);
+    let secondNumber = super.toNumber(numbers[1]);
+    let result = firstNumber * secondNumber;
     return [firstNumber, secondNumber, result]
   }
-  toString() {
-    let operation = this.generateOperation();
-    return parseInt(operation[0].join(''), 10) + " + " + parseInt(operation[1].join(''), 10);
+}
+class Division extends Operation {
+  constructor(difficulty, mode) {
+    super()
+    //Mode:
+    //0 : extact division
+    //1 : approximate division
+    this.mode = mode
+    this.difficulty = this.difficulty = Math.min(Math.max(difficulty, 0.2), 1);
+
+
   }
+  get operatore() {
+    return "/"
+  }
+  generateOperationPerfect() {
+    let digit0 = Math.max(1, Math.round(this.difficulty * 4));
+    let digit1 = super.getRandomInt(1, Math.max(1, this.difficulty * 2));
+    let firstNumber = []
+    let secondNumber = null
+    while (secondNumber === null) {
+      firstNumber[0] = super.getRandomInt(1, 9)
+      secondNumber = null
+      for (let a = 0; a < digit0; a++) {
+        firstNumber[a] = super.getRandomDigit();
+      }
+      secondNumber = this.createSecondNumber(digit0, digit1, firstNumber, secondNumber)
+      console.log(secondNumber)
+      if (secondNumber !== null) {
+        console.log(super.toArray(secondNumber))
+      }
+    }
+
+
+    return [firstNumber, super.toArray(secondNumber)]
+
+  }
+  createSecondNumber(digit0, digit1, firstNumber, secondNumber) {
+    let dividendo = super.toNumber(firstNumber);
+    console.log(dividendo)
+    let factors = super.getAllFactorsFor(dividendo);
+    console.log(factors)
+    if (factors.length <= 2) {
+      return null;
+    }
+    return factors[super.getRandomInt(0, factors.length - 2)]
+  }
+  toArray() {
+    let numbers = this.generateOperationPerfect()
+    let firstNumber = super.toNumber(numbers[0]);
+    let secondNumber = super.toNumber(numbers[1]);
+    let result = firstNumber / secondNumber;
+    return [firstNumber, secondNumber, result]
+  }
+
+
 }
 class App extends Component {
   constructor() {
     super()
     this.addition = new Addition(1);
     this.subtraction = new Subtraction(0.2, true);
-    this.pythagoras = new Pythagoras({exerciseLength: 500})
+    this.pythagoras = new Pythagoras({ exerciseLength: 5 })
+    this.multiplication = new Multiplication(0.2)
+    this.division = new Division(0.5, 1);
   }
   render() {
     //let operation = this.prova.toArray();
@@ -398,7 +431,10 @@ class App extends Component {
     let operatore = this.addition.operatore
     let sub = this.addition.toArray()
 
-    let exercise = this.pythagoras.newExercise(); 
+    let exercise = this.pythagoras.newExercise();
+
+    let mul = this.multiplication.toArray();
+    let div = this.division.toArray();
     console.log(exercise)
     return (
       <div className="App">
@@ -428,6 +464,30 @@ class App extends Component {
           </div>
           <div className="bottomPart">
             <div className="result">{sub[2]}</div>
+          </div>
+        </div>
+        <div className="operation sum-sub">
+          <div className="topPart">
+            <div className="operandi">
+              <span className="firstNumber">{mul[0]}</span>
+              <span className="secondNumber">{mul[1]}</span>
+            </div>
+            <div className="operatore">{this.multiplication.operatore}</div>
+          </div>
+          <div className="bottomPart">
+            <div className="result">{mul[2]}</div>
+          </div>
+        </div>
+        <div className="operation sum-sub">
+          <div className="topPart">
+            <div className="operandi">
+              <span className="firstNumber">{div[0]}</span>
+              <span className="secondNumber">{div[1]}</span>
+            </div>
+            <div className="operatore">{this.division.operatore}</div>
+          </div>
+          <div className="bottomPart">
+            <div className="result">{div[2]}</div>
           </div>
         </div>
         {exercise.map(function (operation, u) {
