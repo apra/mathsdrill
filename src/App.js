@@ -87,8 +87,8 @@ class Operation {
       while ((remainder % i) === 0) {
         factors.push(i);
         let temp = []
-        for (let a = 0; a < factors.length - 1; a++){
-          temp[a] = factors[factors.length - 1]*factors[a];
+        for (let a = 0; a < factors.length - 1; a++) {
+          temp[a] = factors[factors.length - 1] * factors[a];
         }
         console.log(temp)
         factors = factors.concat(temp)
@@ -98,7 +98,19 @@ class Operation {
 
     return factors;
   }
-
+  //https://stackoverflow.com/questions/28575416/finding-out-if-two-numbers-are-relatively-prime
+  gcd(a, b) {
+    let t;
+    while (b !== 0) {
+      t = a;
+      a = b;
+      b = t % b;
+    }
+    return a;
+  }
+  relativelyPrime(a, b) {
+    return this.gcd(a, b) === 1;
+  }
 }
 class Addition extends Operation {
   //Difficulty goes from 0 to 1.
@@ -371,9 +383,14 @@ class Division extends Operation {
   get operatore() {
     return "/"
   }
+  generateFraction() {
+    let firstNumber = super.getRandomInt(1, this.difficulty * 200)
+    let secondNumber = super.getRandomInt(1, this.difficulty * 200)
+
+    return [super.toArray(firstNumber), super.toArray(secondNumber)]
+  }
   generateOperationPerfect() {
     let digit0 = Math.max(1, Math.round(this.difficulty * 4));
-    let digit1 = super.getRandomInt(1, Math.max(1, this.difficulty * 2));
     let firstNumber = []
     let secondNumber = null
     while (secondNumber === null) {
@@ -382,18 +399,16 @@ class Division extends Operation {
       for (let a = 0; a < digit0; a++) {
         firstNumber[a] = super.getRandomDigit();
       }
-      secondNumber = this.createSecondNumber(digit0, digit1, firstNumber, secondNumber)
+      secondNumber = this.createSecondNumber(firstNumber)
       console.log(secondNumber)
       if (secondNumber !== null) {
         console.log(super.toArray(secondNumber))
       }
     }
-
-
     return [firstNumber, super.toArray(secondNumber)]
 
   }
-  createSecondNumber(digit0, digit1, firstNumber, secondNumber) {
+  createSecondNumber(firstNumber) {
     let dividendo = super.toNumber(firstNumber);
     console.log(dividendo)
     let factors = super.getAllFactorsFor(dividendo);
@@ -403,11 +418,44 @@ class Division extends Operation {
     }
     return factors[super.getRandomInt(0, factors.length - 2)]
   }
+  generateOperation() {
+    let digit0 = Math.max(1, Math.round(this.difficulty * 4));
+    let digit1 = super.getRandomInt(1, Math.max(1, this.difficulty * 2));
+    let firstNumber = [super.getRandomInt(1, 9)]
+    let secondNumber = [super.getRandomInt(1, 9)]
+    for (let a = 0; a < digit0; a++) {
+      firstNumber[a] = super.getRandomDigit();
+    }
+    for (let a = 0; a < digit1; a++) {
+      secondNumber[a] = super.getRandomDigit();
+    }
+    return [firstNumber, secondNumber]
+  }
   toArray() {
-    let numbers = this.generateOperationPerfect()
+    let numbers = []
+    if (this.mode === 0) {
+      numbers = this.generateOperationPerfect();
+    } else if (this.mode === 1) {
+      numbers = this.generateOperation();
+    } else {
+      numbers = this.generateFraction();
+    }
     let firstNumber = super.toNumber(numbers[0]);
     let secondNumber = super.toNumber(numbers[1]);
-    let result = firstNumber / secondNumber;
+    let result = 0
+    if (this.mode === 0) {
+      result = firstNumber / secondNumber;
+    } else if (this.mode === 1) {
+      result = Math.round(firstNumber / secondNumber)
+    } else {
+      result = [firstNumber, secondNumber]
+      let gcd = super.gcd(firstNumber, secondNumber) 
+      while (gcd !== 1) {
+        result[0] /= gcd
+        result[1] /= gcd
+        gcd = super.gcd(result[0], result[1])
+      }
+    }
     return [firstNumber, secondNumber, result]
   }
 
@@ -420,7 +468,7 @@ class App extends Component {
     this.subtraction = new Subtraction(0.2, true);
     this.pythagoras = new Pythagoras({ exerciseLength: 5 })
     this.multiplication = new Multiplication(0.2)
-    this.division = new Division(0.5, 1);
+    this.division = new Division(0.5, 2);
   }
   render() {
     //let operation = this.prova.toArray();
@@ -487,7 +535,7 @@ class App extends Component {
             <div className="operatore">{this.division.operatore}</div>
           </div>
           <div className="bottomPart">
-            <div className="result">{div[2]}</div>
+            <div className="result">{div[2][0]} / {div[2][1]}</div>
           </div>
         </div>
         {exercise.map(function (operation, u) {
