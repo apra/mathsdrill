@@ -52,7 +52,7 @@ class Exercise extends Component {
     this.operation = {}
     this.startExercise = this.startExercise.bind(this);
     this.state = {
-      visibility: [],
+      visible: 0,
       points: 0
     }
     this.timer = 0
@@ -63,16 +63,16 @@ class Exercise extends Component {
   startExercise(e, elements) {
     //console.log("started new exercise")
     //console.log(e.target)
-    let visibilities = []
+    /*let visibilities = []
     visibilities[0] = true
     for (let i = 1; i < elements.length; i++) {
       visibilities[i] = false
-    }
+    }*/
 
     this.setState(prevState => ({
       scene: "playing",
       points: 0,
-      visibility: visibilities
+      visible: 0
     }));
     this.timer = Date.now()
     //this.props.eventHandler(e);
@@ -108,28 +108,34 @@ class Exercise extends Component {
           operations[i] = new Division(settings.difficulty, mode);
           break;
         default:
-          operations[i] = new Addition(0.5);
+          operations[i] = {};
       }
     }
     return operations
   }
   submitResult(e, result, element) {
-    console.log(e.target)
-    console.log(result)
+    console.log(e.target.value)
+    let point = (result===parseInt(e.target.value,10))? 1 : 0
     this.setState(prevState => {
       console.log(element)
-      let visibilities = prevState.visibility;
+      /*let visibilities = prevState.visibility;
       visibilities[element] = false
       if (element + 1 < visibilities.length) {
         visibilities[element + 1] = true;
       }
-      console.log(prevState.points)
+      console.log(prevState.points)*/
+    
       return ({
-        points: prevState.points + 1,
-        visibility: visibilities
+        points: prevState.points + point,
+        visible: element+1
       })
     })
     return true;
+  }
+
+  componentDidUpdate() {
+    if(this.resultInput)
+      this.resultInput.focus();   
   }
   render() {
     let settings = this.props.settings;
@@ -144,7 +150,6 @@ class Exercise extends Component {
     for (let a in this.operations) {
       for (let i = 0; i < this.amounts[a]; i++) {
         this.elements[e++] = [this.operations[a].toArray(), this.operations[a].operatore];
-
       }
     }
 
@@ -159,8 +164,8 @@ class Exercise extends Component {
           this.startExercise(e, self.elements)
         }}> Start</div>
         {this.elements.map(function (operation, u, array) {
-          console.log(self.state.visibility[u])
-          if (self.state.visibility[u]) {
+          console.log(self.state.visible)
+          if (self.state.visible === u) {
             return (
               <div className="prova" key={u}>
                 <div className="operation sum-sub" key={u}>
@@ -173,9 +178,11 @@ class Exercise extends Component {
                   </div>
 
                   <div className="bottomPart">
-                    <input onChange={(e) => {
-                      self.submitResult(e, operation[0][2], u)
-                    }} className="result" />
+                    <input onKeyPress={(e) => {
+                      if (e.key == 'Enter') {
+                        self.submitResult(e, operation[0][2], u)
+                      }  
+                    }} className="result" ref={(input) => { self.resultInput = input; }} />
                   </div>
                 </div>
               </div>

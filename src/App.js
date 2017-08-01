@@ -8,16 +8,16 @@ import './App.css';
 class App extends Component {
   constructor() {
     super()
-    this.addition = new Addition(1);
+    /*this.addition = new Addition(1);
     this.subtraction = new Subtraction(0.2, true);
     this.pythagoras = new Pythagoras({ exerciseLength: 5 })
     this.multiplication = new Multiplication(0.2)
-    this.division = new Division(0.5, 2);
+    this.division = new Division(0.5, 2);*/
     this.state = {
       //0: addition, 1: subtraction, 2: multiplication, 3: division
-      operation: "0",
-      mode: "0",
-      amount: "20",
+      operation: "",
+      mode: "",
+      amount: "",
       difficulty: 0.5
     }
     this.updateSettings = this.updateSettings.bind(this);
@@ -43,7 +43,7 @@ class App extends Component {
   }
   render() {
     //let operation = this.prova.toArray();
-    let operations = []
+    /*let operations = []
     for (let i = 0; i < 1; i++) {
       operations[i] = this.subtraction.toArray();
     }
@@ -53,13 +53,13 @@ class App extends Component {
     let exercise = this.pythagoras.newExercise();
 
     let mul = this.multiplication.toArray();
-    let div = this.division.toArray();
+    let div = this.division.toArray();*/
     return (
       <div className="App">
         <Settings settings={this.state} updateSettings={this.updateSettings} addOperation={this.addOperation}/>
         <Exercise settings={this.state} eventHandler={this.updateSettings} />
 
-        {operations.map(function (operation, u) {
+        {/*operations.map(function (operation, u) {
           return (
             <div className="operation sum-sub" key={u}>
               <div className="topPart">
@@ -74,7 +74,7 @@ class App extends Component {
               </div>
             </div>
           )
-        })}
+        })
         <div className="operation sum-sub">
           <div className="topPart">
             <div className="operandi">
@@ -110,8 +110,8 @@ class App extends Component {
           <div className="bottomPart">
             <div className="result">{div[2][0]} / {div[2][1]}</div>
           </div>
-        </div>
-        {exercise.map(function (operation, u) {
+        </div>*/}
+        {/*exercise.map(function (operation, u) {
           return (
             <div className="operation sum-sub" key={u}>
               <div className="topPart">
@@ -126,7 +126,7 @@ class App extends Component {
               </div>
             </div>
           )
-        })}
+        })*/}
       </div>
     );
   }

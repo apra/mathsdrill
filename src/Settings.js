@@ -21,7 +21,7 @@ class OperationList extends Component {
         string = 'Division'
         break;
       default:
-        string = 'Addition'
+        string = ''
         break;
     }
     return string;
