@@ -31,14 +31,14 @@ class App extends Component {
       mode: inputSettings.mdoe || prevState.mode,
       difficulty: inputSettings.difficulty || prevState.difficulty,
       amount: inputSettings.amount || prevState.amount,
-      scene: inputSettings.scene || prevState.scene,
+      scene: inputSettings.scene || prevState.scene
     }))
   }
   addOperation(operationID, mode, amount) {
     this.setState(prevState => ({
       operation: prevState.operation+","+operationID,
       mode: prevState.mode+","+mode,
-      amount: prevState.amount+","+amount,
+      amount: prevState.amount + "," + amount
     }))
   }
   render() {

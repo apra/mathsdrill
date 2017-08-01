@@ -1,6 +1,6 @@
 {
   "name": "math-drill",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "private": true,
   "dependencies": {
     "random-js": "^1.0.8",
