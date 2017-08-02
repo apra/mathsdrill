@@ -165,7 +165,7 @@ class Exercise extends Component {
         }}> Start</div>
         {this.elements.map(function (operation, u, array) {
           console.log(self.state.visible)
-          if (self.state.visible === u) {
+          if (self.state.visible === u || self.state.visible === u-1  || self.state.visible === u+1) {
             return (
               <div className="prova" key={u}>
                 <div className="operation sum-sub" key={u}>
@@ -182,7 +182,7 @@ class Exercise extends Component {
                       if (e.key == 'Enter') {
                         self.submitResult(e, operation[0][2], u)
                       }  
-                    }} className="result" ref={(input) => { self.resultInput = input; }} />
+                    }} className="result" ref={(input) => { if (self.state.visible === u) { self.resultInput = input; } }} />
                   </div>
                 </div>
               </div>
